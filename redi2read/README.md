@@ -56,3 +56,23 @@ OK
 
 ![user-role-model](images/user-role-model.png)
 
+```
+127.0.0.1:6379> KEYS com.redislabs.edu.redi2read.models.Role*
+1) "com.redislabs.edu.redi2read.models.Role:d7951b59-1419-4161-baf8-0ee863cdca80"
+2) "com.redislabs.edu.redi2read.models.Role"
+3) "com.redislabs.edu.redi2read.models.Role:a1fa6e36-b4f4-42df-9a7c-ac3a4d0727f6"
+127.0.0.1:6379> TYPE "com.redislabs.edu.redi2read.models.Role:d7951b59-1419-4161-baf8-0ee863cdca80"
+hash
+127.0.0.1:6379> HGETALL "com.redislabs.edu.redi2read.models.Role:d7951b59-1419-4161-baf8-0ee863cdca80"
+1) "_class"
+2) "com.redislabs.edu.redi2read.models.Role"
+3) "id"
+4) "d7951b59-1419-4161-baf8-0ee863cdca80"
+5) "name"
+6) "customer"
+127.0.0.1:6379> TYPE "com.redislabs.edu.redi2read.models.Role"
+set
+127.0.0.1:6379> SMEMBERS "com.redislabs.edu.redi2read.models.Role"
+1) "a1fa6e36-b4f4-42df-9a7c-ac3a4d0727f6"
+2) "d7951b59-1419-4161-baf8-0ee863cdca80"
+```
