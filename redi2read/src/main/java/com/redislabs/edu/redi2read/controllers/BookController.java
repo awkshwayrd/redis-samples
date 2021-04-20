@@ -4,7 +4,9 @@ import com.redislabs.edu.redi2read.models.Book;
 import com.redislabs.edu.redi2read.models.Category;
 import com.redislabs.edu.redi2read.repositories.BookRepository;
 import com.redislabs.edu.redi2read.repositories.CategoryRepository;
+import com.redislabs.lettusearch.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,28 @@ public class BookController {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Value("${app.booksSearchIndexName}")
+    private String searchIndexName;
+    @Autowired
+    private StatefulRediSearchConnection<String, String> searchConnection;
+
+    @Value("${app.autoCompleteKey}")
+    private String autoCompleteKey;
+
+    @GetMapping("/authors")
+    public List<Suggestion<String>> authorAutoComplete(@RequestParam(name="q")String query) {
+        RediSearchCommands<String, String> commands = searchConnection.sync();
+        SuggetOptions options = SuggetOptions.builder().max(20L).build();
+        return commands.sugget(autoCompleteKey, query, options);
+    }
+
+    @GetMapping("/search")
+    public SearchResults<String,String> search(@RequestParam(name="q")String query) {
+        RediSearchCommands<String, String> commands = searchConnection.sync();
+        SearchResults<String, String> results = commands.search(searchIndexName, query);
+        return results;
+    }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> all( @RequestParam(defaultValue = "0") Integer page,

@@ -137,5 +137,23 @@ ReJSON-RL
 curl --location --request GET 'http://localhost:8080/api/carts/fd8fb4d8-eeb8-49b7-b033-3a66cc8eeebf' | jq
 ```
 
+RediSearch index added
+
+```
+1618939377.342267 [0 172.23.0.1:59820] "FT.INFO" "books-idx"
+1618939377.350749 [0 172.23.0.1:59820] "FT.CREATE" "books-idx" "PREFIX" "1" "com.redislabs.edu.redi2read.models.Book:" "SCHEMA" "title" "TEXT" "SORTABLE" "subtitle" "TEXT" "description" "TEXT" "authors.[0]" "TEXT" "authors.[1]" "TEXT" "authors.[2]" "TEXT" "authors.[3]" "TEXT" "authors.[4]" "TEXT" "authors.[5]" "TEXT" "authors.[6]" "TEXT"
+
+127.0.0.1:6379> FT.INFO "books-idx"
+127.0.0.1:6379> FT.SEARCH books-idx "networking" RETURN 1 title
+127.0.0.1:6379> FT.SEARCH books-idx "@title:networking" RETURN 1 title 
+127.0.0.1:6379> FT.SEARCH books-idx "clo*" RETURN 4 title subtitle authors.[0] authors.[1] 
+127.0.0.1:6379> FT.SEARCH books-idx "%scal%" RETURN 2 title subtitle 
+127.0.0.1:6379> FT.SEARCH books-idx "rust | %scal%" RETURN 3 title subtitle authors.[0]
+
+curl --location --request GET 'http://localhost:8080/api/books/search/?q=%25scal%25'
+curl --location --request GET 'http://localhost:8080/api/books/authors/?q=brian%20s'
+curl --location --request GET 'http://localhost:8080/api/books/authors/?q=brian%20sa'
+```
+
 
 
