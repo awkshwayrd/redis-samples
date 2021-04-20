@@ -117,3 +117,14 @@ curl --location --request GET 'http://localhost:8080/api/users/?email=donald.gib
 
 ```
 
+Books categories catalog added from books folder
+
+```
+curl --location --request GET 'http://localhost:8080/api/books/' | jq
+curl --location --request GET 'http://localhost:8080/api/books/1680503545' | jq
+curl --location --request GET 'http://localhost:8080/api/books/categories' | jq
+curl --location --request GET 'http://localhost:8080/api/books/?size=25&page=2' | jq
+```
+
+
+
