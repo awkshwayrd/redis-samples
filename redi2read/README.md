@@ -126,5 +126,16 @@ curl --location --request GET 'http://localhost:8080/api/books/categories' | jq
 curl --location --request GET 'http://localhost:8080/api/books/?size=25&page=2' | jq
 ```
 
+RedisJson shopping cart added
+
+```
+127.0.0.1:6379> SRANDMEMBER "com.redislabs.edu.redi2read.models.Cart"
+"com.redislabs.edu.redi2read.models.Cart:fd8fb4d8-eeb8-49b7-b033-3a66cc8eeebf"
+127.0.0.1:6379> TYPE "com.redislabs.edu.redi2read.models.Cart:fd8fb4d8-eeb8-49b7-b033-3a66cc8eeebf"
+ReJSON-RL
+
+curl --location --request GET 'http://localhost:8080/api/carts/fd8fb4d8-eeb8-49b7-b033-3a66cc8eeebf' | jq
+```
+
 
 
