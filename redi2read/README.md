@@ -155,5 +155,102 @@ curl --location --request GET 'http://localhost:8080/api/books/authors/?q=brian%
 curl --location --request GET 'http://localhost:8080/api/books/authors/?q=brian%20sa'
 ```
 
+Redisgraph
+
+```
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Actor {name: 'Kathryn Hahn', nick: 'ka'})"
+1) 1) "Labels added: 1"
+   2) "Nodes created: 1"
+   3) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Show {name: 'WandaVision', nick: 'wv'})"
+1) 1) "Labels added: 1"
+   2) "Nodes created: 1"
+   3) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'ka'}), (s:Show {nick: 'wv'}) CREATE (a)-[:ACTS]->(s)"
+1) 1) "Relationships created: 1"
+
+127.0.0.1:6379> GRAPH.QUERY "imdb-grf" "match (n) return distinct labels(n)"
+1) 1) "labels(n)"
+2) 1) 1) "Actor"
+   2) 1) "Show"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Actor {name: 'Paul Bettany', nick: 'pb'})"
+1) 1) "Nodes created: 1"
+   2) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Actor {name: 'Paul Rudd', nick: 'pr'})"
+1) 1) "Nodes created: 1"
+   2) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Show {name: 'The Shrink Next Door', nick: 'tsnd'})"
+1) 1) "Nodes created: 1"
+   2) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Movie {name: 'Iron Man', nick: 'im'})"
+1) 1) "Labels added: 1"
+   2) "Nodes created: 1"
+   3) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Movie {name: 'Our Idiot Brother', nick: 'oib'})"
+1) 1) "Nodes created: 1"
+   2) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "CREATE (:Movie {name: 'Captain America: Civil War', nick: 'cacw'})"
+1) 1) "Nodes created: 1"
+   2) "Properties set: 2"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'pb'}), (s:Show {nick: 'wv'}) CREATE (a)-[:ACTS]->(s)"
+1) 1) "Relationships created: 1"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'pb'}), (m:Movie {nick: 'im'}) CREATE (a)-[:ACTS]->(m)"
+1) 1) "Relationships created: 1"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'ka'}), (m:Movie {nick: 'oib'}) CREATE (a)-[:ACTS]->(m)"
+1) 1) "Relationships created: 1"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'pr'}), (m:Movie {nick: 'oib'}) CREATE (a)-[:ACTS]->(m)"
+1) 1) "Relationships created: 1"
+
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'pr'}), (m:Movie {nick: 'cacw'}) CREATE (a)-[:ACTS]->(m)"
+1) 1) "Relationships created: 1"
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'pr'}), (s:Show {nick: 'tsnd'}) CREATE (a)-[:ACTS]->(s)"
+1) 1) "Relationships created: 1"
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor {nick: 'ka'}), (s:Show {nick: 'tsnd'}) CREATE (a)-[:ACTS]->(s)"
+1) 1) "Relationships created: 1"
+   2) "Cached execution: 0"
+What are the relationships in our graph?   
+127.0.0.1:6379> GRAPH.QUERY "imdb-grf" "MATCH ()-[e]->() RETURN distinct type(e)"
+1) 1) "type(e)"
+2) 1) 1) "ACTS"
+
+Count the labels in the graph:
+127.0.0.1:6379> GRAPH.QUERY "imdb-grf" "MATCH (n) RETURN distinct labels(n), count(n)"
+1) 1) "labels(n)"
+   2) "count(n)"
+2) 1) 1) "Actor"
+      2) (integer) 3
+   2) 1) "Movie"
+      2) (integer) 3
+   3) 1) "Show"
+      2) (integer) 2
+      
+127.0.0.1:6379> GRAPH.QUERY imdb-grf "MATCH (a:Actor)-[:ACTS]->(:Show {name:'The Shrink Next Door'}) RETURN a.name"
+1) 1) "a.name"
+2) 1) 1) "Kathryn Hahn"
+   2) 1) "Paul Rudd"
+   
+Find any two actors that worked together in a movie:
+127.0.0.1:6379> GRAPH.QUERY "imdb-grf" "MATCH (a1:Actor)-[:ACTS]->(m:Movie)<-[:ACTS]-(a2:Actor) WHERE a1 <> a2 AND id(a1) > id(a2) RETURN m.name, a1.name, a2.name"
+1) 1) "m.name"
+   2) "a1.name"
+   3) "a2.name"
+2) 1) 1) "Our Idiot Brother"
+      2) "Paul Rudd"
+      3) "Kathryn Hahn"
+
+```
+
 
 
